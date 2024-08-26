@@ -10,7 +10,9 @@ public class FishingSystemMain : MonoBehaviour
     [SerializeField] private Button throwBtn;
 
     private int[] magObject = { 0, 1, 2, 3, 4, 5 };
-
+    private int num;
+    private string OJname;
+    private float OJprice;
     private bool IsThrowed;
     private void Update()
     {
@@ -33,12 +35,23 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void MagnetThrowed()
     {
-
+        SetRandomItem();
         
     }
     private void SetRandomItem()
     {
-        int num = Random.Range(0, (magObject.Length - 1));
-        Item.SetItem(num);
+        int num = Random.Range(0, 0/*(magObject.Length - 1)*/);
+        switch (Item.SetItem(num))
+        {
+            case ItemClass.item.None:
+                SetValue("None", 0);
+                break;
+        }
+    }
+    private void SetValue(string ItemName, int ItemPrice)
+    {
+        OJname = ItemName;
+        OJprice = ItemPrice;
+        print(OJname);
     }
 }
