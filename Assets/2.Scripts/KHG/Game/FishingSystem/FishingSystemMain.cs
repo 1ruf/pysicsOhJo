@@ -30,7 +30,7 @@ public class FishingSystemMain : MonoBehaviour
     }
     public void ThrowBtnClicked()
     {
-        throwBtn.interactable = false;
+        //throwBtn.interactable = false;
         MagnetThrowed();
     }
     private void MagnetThrowed()
@@ -40,11 +40,17 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void SetRandomItem()
     {
-        int num = Random.Range(0, 0/*(magObject.Length - 1)*/);
+        int num = Random.Range(0, 4);//ENUM 길이);
         switch (Item.SetItem(num))
         {
             case ItemClass.item.None:
                 SetValue("None", 0);
+                break;
+            case ItemClass.item.glassess:
+                SetValue("망가진 안경테" ,5);
+                break;
+            case ItemClass.item.vault:
+                SetValue("무언가 들어있는 금고", 5);
                 break;
         }
     }

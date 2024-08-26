@@ -11,20 +11,20 @@ public class ItemClass
         glassess = 2
     }
 
-    private item nowItem;
+    public item nowItem;
 
 
     public item SetItem(int ObjectNum)
     {
         switch (ObjectNum)
         {
-            case 1:
+            case 0:
                 nowItem = item.None;
                 break;
-            case 2:
+            case 1:
                 nowItem = item.glassess;
                 break;
-            case 3:
+            case 2:
                 nowItem = item.vault;
                 break;
         }
