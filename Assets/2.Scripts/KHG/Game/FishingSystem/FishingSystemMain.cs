@@ -12,7 +12,7 @@ public class FishingSystemMain : MonoBehaviour
     List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고
     private int num;
     private string OJname;
-    private string OJprice;
+    private string Rarity;
     private bool IsThrowed;
     private void Update()
     {
@@ -44,13 +44,13 @@ public class FishingSystemMain : MonoBehaviour
         switch (Item.SetItem(num))
         {
             case ItemClass.item.None:
-                SetValue("아무것도 끌어올리지 못했다..", 0 , 0);
+                SetValue("아무것도 끌어올리지 못했다..", 0 , 0); //이름,희귀도,아이템 번호
                 break;
             case ItemClass.item.glassess:
-                SetValue("망가진 안경테" ,5 , 1);
+                SetValue("망가진 안경테" ,1 , 1);
                 break;
             case ItemClass.item.vault:
-                SetValue("무언가 들어있는 금고", 0 , 2);
+                SetValue("무언가 들어있는 금고", 3 , 2);
                 break;
         }
     }
@@ -58,7 +58,7 @@ public class FishingSystemMain : MonoBehaviour
     {
         string value = "0";
         OJname = ItemName;
-        OJprice = ItemPrice.ToString();
+        Rarity = ItemPrice.ToString();
         if (ItemNum > 0)
         {
             if (ItemNum == 2)
@@ -67,12 +67,12 @@ public class FishingSystemMain : MonoBehaviour
             }
             else
             {
-                value = OJprice.ToString();
+                value = Rarity.ToString();
             }
         }
-        OJprice = value;
-        SaveToInventory(ItemName, OJprice, ItemNum);
-        print(OJname + ",가격:" + OJprice);
+        Rarity = value;
+        SaveToInventory(ItemName, Rarity, ItemNum);
+        print(OJname + ",희귀도:" + Rarity);
         throwBtn.interactable = true;
     }
     private void SaveToInventory(string ItemName,string ItemPrice,int ItemNum)
