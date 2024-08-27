@@ -9,10 +9,10 @@ public class FishingSystemMain : MonoBehaviour
     ItemClass Item = new ItemClass();
     [SerializeField] private Button throwBtn;
 
-    List<string> inventoryList = new List<string>();
+    List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고
     private int num;
     private string OJname;
-    private float OJprice;
+    private string OJprice;
     private bool IsThrowed;
     private void Update()
     {
@@ -44,42 +44,43 @@ public class FishingSystemMain : MonoBehaviour
         switch (Item.SetItem(num))
         {
             case ItemClass.item.None:
-                SetValue("아무것도 끌어올리지 못했다..", 0);
+                SetValue("아무것도 끌어올리지 못했다..", 0 , 0);
                 break;
             case ItemClass.item.glassess:
-                SetValue("망가진 안경테" ,5);
+                SetValue("망가진 안경테" ,5 , 1);
                 break;
             case ItemClass.item.vault:
-                SetValue("무언가 들어있는 금고", -7);
+                SetValue("무언가 들어있는 금고", 0 , 2);
                 break;
         }
     }
-    private void SetValue(string ItemName, int ItemPrice)
+    private void SetValue(string ItemName, int ItemPrice, int ItemNum)
     {
-        string value = "Unknown";
+        string value = "0";
         OJname = ItemName;
-        OJprice = ItemPrice;
-        if (OJprice >= 0)
+        OJprice = ItemPrice.ToString();
+        if (ItemNum > 0)
         {
-            value = OJprice.ToString();
+            if (ItemNum == 2)
+            {
+                value = "???";
+            }
+            else
+            {
+                value = OJprice.ToString();
+            }
         }
-        else if (OJprice == -7)
-        {
-            value = "???";
-        }
-        else if(OJprice < 0)
-        {
-            print(ItemName + ItemPrice);
-            OJname = "ERROR";
-            value = "ERROR";
-        }
-        SaveToInventory(ItemName, ItemPrice);
-        print(OJname + ",가격:" + value);
+        OJprice = value;
+        SaveToInventory(ItemName, OJprice, ItemNum);
+        print(OJname + ",가격:" + OJprice);
         throwBtn.interactable = true;
     }
-    private void SaveToInventory(string ItemName,int ItemPrice)
+    private void SaveToInventory(string ItemName,string ItemPrice,int ItemNum)
     {
-        inventoryList.Add(ItemName);
-        print(inventoryList);
+        if (!(inventoryList.Contains(ItemNum)))
+            inventoryList.Add(ItemNum);
+        else
+            print("이미있음");
+        print(inventoryList.Count);
     }
 }
