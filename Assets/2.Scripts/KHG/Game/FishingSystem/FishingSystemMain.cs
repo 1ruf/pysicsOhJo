@@ -54,41 +54,39 @@ public class FishingSystemMain : MonoBehaviour
     {
         string ItemName = "null";
         int ItemNum = 0;
-        float randomValue = Random.Range(0f, 100f);
+        float randomValue = Random.Range(0f, 100.0f);
         OJname = ItemName;
-        if (randomValue <= 35)
+        if (randomValue <= 40)
         {
-            OJrarity = "common";
-            ItemNum = UnityEngine.Random.Range(1, 11);
+            OJrarity = "common";                                                             //40
+            ItemNum = UnityEngine.Random.Range(1, 6);
         }
-        else if (randomValue <= 65)
+        else if (randomValue <= 75)
         {
-            // Uncommon: 6-10 (cumulative 30% range)
-            OJrarity = "uncommon";
+            OJrarity = "uncommon";                                                           //35
             ItemNum = UnityEngine.Random.Range(6, 11); // Random number between 6 and 10
         }
-        else if (randomValue <= 85)
+        else if (randomValue <= 90)
         {
-            // Rare: 11-15 (cumulative 20% range)
-            OJrarity = "rare";
+            OJrarity = "rare";                                                               //15
             ItemNum = UnityEngine.Random.Range(11, 16); // Random number between 11 and 15
         }
-        else if (randomValue <= 95)
+        else if (randomValue <= 97.9)
         {
             // Epic: 16-18 (cumulative 10% range)
-            OJrarity = "super rare";
+            OJrarity = "super rare";                                                         //7.9
             ItemNum = UnityEngine.Random.Range(16, 19); // Random number between 16 and 18
         }
-        else if (randomValue <= 99)
+        else if (randomValue <= 99.9)
         {
             // Legendary: 19-20 (cumulative 4% range)
-            OJrarity = "mythic";
+            OJrarity = "legend";                                                             //2
             ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
         }
-        else
+        else 
         {
             // Mythic: 21 (cumulative 1% range)
-            OJrarity = "legend ";
+            OJrarity = "mythic";                                                            //0.1
             ItemNum = UnityEngine.Random.Range(21, 23);
         }
 

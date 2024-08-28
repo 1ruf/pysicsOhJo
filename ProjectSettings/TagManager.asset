@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - common
+  - uncommon
+  - rare
+  - superRare
+  - legendary
+  - mythic
   layers:
   - Default
   - TransparentFX
