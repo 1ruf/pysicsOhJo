@@ -76,19 +76,19 @@ public class FishingSystemMain : MonoBehaviour
         else if (randomValue <= 95)
         {
             // Epic: 16-18 (cumulative 10% range)
-            OJrarity = "epic";
+            OJrarity = "super rare";
             ItemNum = UnityEngine.Random.Range(16, 19); // Random number between 16 and 18
         }
         else if (randomValue <= 99)
         {
             // Legendary: 19-20 (cumulative 4% range)
-            OJrarity = "Legendary";
+            OJrarity = "mythic";
             ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
         }
         else
         {
             // Mythic: 21 (cumulative 1% range)
-            OJrarity = "Mythic";
+            OJrarity = "legend ";
             ItemNum = UnityEngine.Random.Range(21, 23);
         }
 
