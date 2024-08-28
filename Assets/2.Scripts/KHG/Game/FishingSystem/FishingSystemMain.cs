@@ -6,13 +6,12 @@ using DG.Tweening;
 
 public class FishingSystemMain : MonoBehaviour
 {
-    ItemClass Item = new ItemClass();
     [SerializeField] private Button throwBtn;
 
-    List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고
-    private int num;
+    List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고 , 3 비행기 파편 , 4 자동차 문짝 , 5 오락기 , 6 철근 , 7 "철" 권 (예준이 얼굴사진) , 8 클립 , 9 금고 , 10 바늘 , 11 부서진 책상 , 
+    private string[] itemNames = { /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",/*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "찢어진 중국집 전단지", "녹슨 가위", "지퍼 손잡이",/*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",/*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "문짝이 뜯겨나간 자동차",/*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",/*Mythic*/"\"철\"권", "나노머신을 두른 암스트롱 상원의원" };
     private string OJname;
-    private string OJprice;
+    private string OJrarity;
     private bool IsThrowed;
     private void Update()
     {
@@ -30,52 +29,108 @@ public class FishingSystemMain : MonoBehaviour
     }
     public void ThrowBtnClicked()
     {
+        throwBtn.gameObject.SetActive(false);
         throwBtn.interactable = false;
         MagnetThrowed();
     }
     private void MagnetThrowed()
     {
         //대충 전지는 애니메이션
-        SetRandomItem();
+        //대충 끌어올리는 행동?
+        if (/*그 행동이 True 이면*/true)
+        {
+            SetRandomItem();
+        }
+        else
+        {
+            print("낚시 실패");
+        }
     }
     private void SetRandomItem()
     {
-        int num = Random.Range(0, 4);//ENUM 길이);
-        switch (Item.SetItem(num))
-        {
-            case ItemClass.item.None:
-                SetValue("아무것도 끌어올리지 못했다..", 0 , 0);
-                break;
-            case ItemClass.item.glassess:
-                SetValue("망가진 안경테" ,5 , 1);
-                break;
-            case ItemClass.item.vault:
-                SetValue("무언가 들어있는 금고", 0 , 2);
-                break;
-        }
+        SetValue();
     }
-    private void SetValue(string ItemName, int ItemPrice, int ItemNum)
+    private void SetValue()
     {
-        string value = "0";
+        string ItemName = "null";
+        int ItemNum = 0;
+        float randomValue = Random.Range(0f, 100f);
         OJname = ItemName;
-        OJprice = ItemPrice.ToString();
-        if (ItemNum > 0)
+        if (randomValue <= 35)
         {
-            if (ItemNum == 2)
-            {
-                value = "???";
-            }
-            else
-            {
-                value = OJprice.ToString();
-            }
+            OJrarity = "common";
+            ItemNum = UnityEngine.Random.Range(1, 11);
         }
-        OJprice = value;
-        SaveToInventory(ItemName, OJprice, ItemNum);
-        print(OJname + ",가격:" + OJprice);
+        else if (randomValue <= 65)
+        {
+            // Uncommon: 6-10 (cumulative 30% range)
+            OJrarity = "uncommon";
+            ItemNum = UnityEngine.Random.Range(6, 11); // Random number between 6 and 10
+        }
+        else if (randomValue <= 85)
+        {
+            // Rare: 11-15 (cumulative 20% range)
+            OJrarity = "rare";
+            ItemNum = UnityEngine.Random.Range(11, 16); // Random number between 11 and 15
+        }
+        else if (randomValue <= 95)
+        {
+            // Epic: 16-18 (cumulative 10% range)
+            OJrarity = "epic";
+            ItemNum = UnityEngine.Random.Range(16, 19); // Random number between 16 and 18
+        }
+        else if (randomValue <= 99)
+        {
+            // Legendary: 19-20 (cumulative 4% range)
+            OJrarity = "Legendary";
+            ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
+        }
+        else
+        {
+            // Mythic: 21 (cumulative 1% range)
+            OJrarity = "Mythic";
+            ItemNum = UnityEngine.Random.Range(21, 23);
+        }
+
+        #region 예비
+        /*if (ItemNum > 0 && ItemNum <= 10)
+        {
+            OJrarity = "common"; //35%
+        }
+        else if (ItemNum > 5 && ItemNum <= 10)
+        {
+            OJrarity = "uncommon"; //30%
+        }
+        else if (ItemNum > 10 && ItemNum <= 15)
+        {
+            OJrarity = "rare"; // 20%
+        }
+        else if (ItemNum > 15 && ItemNum <= 18)
+        {
+            OJrarity = "epic"; // 10%
+        }
+        else if (ItemNum > 18 && ItemNum <= 20)
+        {
+            OJrarity = "Legendary"; //4%
+        }
+        else if (ItemNum == 21)
+        {
+            OJrarity = "Mythic"; //1%
+        }
+        else
+        {
+            OJrarity = "error";
+            OJname = "error";
+        }*/
+        #endregion
+
+        SaveToInventory(ItemName, ItemNum);
+        OJname = itemNames[ItemNum];
+        print(OJname + ",희귀도:" + OJrarity);
+        throwBtn.gameObject.SetActive(true);
         throwBtn.interactable = true;
     }
-    private void SaveToInventory(string ItemName,string ItemPrice,int ItemNum)
+    private void SaveToInventory(string ItemName,int ItemNum)
     {
         if (!(inventoryList.Contains(ItemNum)))
             inventoryList.Add(ItemNum);
