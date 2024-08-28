@@ -6,16 +6,21 @@ using DG.Tweening;
 
 public class FishingSystemMain : MonoBehaviour
 {
-    [SerializeField] private Button throwBtn;
+    [SerializeField] private Button throwBtn, LibBtn;
+    [SerializeField] private RectTransform LibMain;
 
     List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고 , 3 비행기 파편 , 4 자동차 문짝 , 5 오락기 , 6 철근 , 7 "철" 권 (예준이 얼굴사진) , 8 클립 , 9 금고 , 10 바늘 , 11 부서진 책상 , 
     private string[] itemNames = { /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",/*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "찢어진 중국집 전단지", "녹슨 가위", "지퍼 손잡이",/*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",/*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "문짝이 뜯겨나간 자동차",/*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",/*Mythic*/"\"철\"권", "나노머신을 두른 암스트롱 상원의원" };
     private string OJname;
     private string OJrarity;
-    private bool IsThrowed;
+    private bool IsThrowed, IsLibOpend, LibBtnCool;
+    private void Start()
+    {
+        LibMain.anchoredPosition = new Vector2(1700, 0);
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && IsLibOpend == false)
         {
             if (IsThrowed)
             {
@@ -25,6 +30,10 @@ public class FishingSystemMain : MonoBehaviour
             {
                 ThrowBtnClicked();
             }
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            LibraryBtnClicked();
         }
     }
     public void ThrowBtnClicked()
@@ -135,5 +144,40 @@ public class FishingSystemMain : MonoBehaviour
         else
             print("이미있음");
         print(inventoryList.Count);
+    }
+    public void LibraryBtnClicked()
+    {
+        if (LibBtnCool == false)
+        {
+            if (IsLibOpend)
+            {
+                LibDisappear();
+                IsLibOpend = false;
+            }
+            else
+            {
+                LibAppear();
+                throwBtn.interactable = false;
+                IsLibOpend = true;
+            }
+        }
+    }
+    private void LibAppear()
+    {
+        StartCoroutine(LibBtnCooltimeChecker(1f));
+        LibMain.DOAnchorPosX(420, 1).SetEase(Ease.OutBack);
+    }
+    private void LibDisappear()
+    {
+        StartCoroutine(LibBtnCooltimeChecker(1f));
+        LibMain.DOAnchorPosX(1700, 1).SetEase(Ease.InBack).OnComplete(() => throwBtn.interactable = true);
+    }
+    private IEnumerator LibBtnCooltimeChecker(float t)
+    {
+        LibBtnCool = true;
+        LibBtn.interactable = false;
+        yield return new WaitForSeconds(t);
+        LibBtnCool = false;
+        LibBtn.interactable = true;
     }
 }
