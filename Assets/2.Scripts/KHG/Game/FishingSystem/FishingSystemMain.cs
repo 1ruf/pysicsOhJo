@@ -6,16 +6,24 @@ using DG.Tweening;
 
 public class FishingSystemMain : MonoBehaviour
 {
+    [SerializeField] private GameObject explainUI;
     [SerializeField] private Button throwBtn, LibBtn;
+    [SerializeField] private Image blocker;
     [SerializeField] private RectTransform LibMain;
 
-    List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고 , 3 비행기 파편 , 4 자동차 문짝 , 5 오락기 , 6 철근 , 7 "철" 권 (예준이 얼굴사진) , 8 클립 , 9 금고 , 10 바늘 , 11 부서진 책상 , 
-    private string[] itemNames = { /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",/*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "찢어진 중국집 전단지", "녹슨 가위", "지퍼 손잡이",/*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",/*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "문짝이 뜯겨나간 자동차",/*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",/*Mythic*/"\"철\"권", "나노머신을 두른 암스트롱 상원의원" };
+    private ExplanationSet _explainSet;
+    private List<int> inventoryList = new List<int>(); 
+    public string[] itemNames = { /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",/*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "찢어진 중국집 전단지", "녹슨 가위", "지퍼 손잡이",/*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",/*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "문짝이 뜯겨나간 자동차",/*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",/*Mythic*/"\"철\"권", "나노머신을 두른 암스트롱 상원의원" };
     private string OJname;
-    private string OJrarity;
+    private string OJrarity = "알수 없음";
     private bool IsThrowed, IsLibOpend, LibBtnCool;
+    private void Awake()
+    {
+        _explainSet = explainUI.GetComponent<ExplanationSet>();
+    }
     private void Start()
     {
+        blocker.DOFade(0, 1).OnComplete(() => blocker.gameObject.SetActive(false));
         LibMain.anchoredPosition = new Vector2(1700, 0);
     }
     private void Update()
@@ -44,7 +52,7 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void MagnetThrowed()
     {
-        //대충 전지는 애니메이션
+        //대충 던지는 애니메이션
         //대충 끌어올리는 행동?
         if (/*그 행동이 True 이면*/true)
         {
@@ -86,16 +94,16 @@ public class FishingSystemMain : MonoBehaviour
             OJrarity = "super rare";                                                         //7.9
             ItemNum = UnityEngine.Random.Range(16, 19); // Random number between 16 and 18
         }
-        else if (randomValue <= 99.9)
+        else if (randomValue <= 99.5)
         {
             // Legendary: 19-20 (cumulative 4% range)
-            OJrarity = "legend";                                                             //2
+            OJrarity = "legendary";                                                             //2
             ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
         }
         else 
         {
             // Mythic: 21 (cumulative 1% range)
-            OJrarity = "mythic";                                                            //0.1
+            OJrarity = "mythic";                                                            //0.5
             ItemNum = UnityEngine.Random.Range(21, 23);
         }
 
@@ -131,16 +139,19 @@ public class FishingSystemMain : MonoBehaviour
         }*/
         #endregion
 
+        OJname = itemNames[ItemNum]; //아이템 이름을 번호에 맞게 지정
         SaveToInventory(ItemName, ItemNum);
-        OJname = itemNames[ItemNum];
-        print(OJname + ",희귀도:" + OJrarity);
         throwBtn.gameObject.SetActive(true);
         throwBtn.interactable = true;
     }
     private void SaveToInventory(string ItemName,int ItemNum)
     {
         if (!(inventoryList.Contains(ItemNum)))
+        {
+            print(OJname + ",희귀도:" + OJrarity);
             inventoryList.Add(ItemNum);
+            _explainSet.LibrarySet(inventoryList);
+        }
         else
             print("이미있음");
         print(inventoryList.Count);
@@ -179,5 +190,11 @@ public class FishingSystemMain : MonoBehaviour
         yield return new WaitForSeconds(t);
         LibBtnCool = false;
         LibBtn.interactable = true;
+    }
+
+    public void InformBtnClicked(int ItemNum)
+    {
+        explainUI.SetActive(true);
+        _explainSet.SetValue(ItemNum, inventoryList);
     }
 }
