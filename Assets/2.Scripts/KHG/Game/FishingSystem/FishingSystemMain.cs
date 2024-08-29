@@ -7,6 +7,7 @@ using DG.Tweening;
 public class FishingSystemMain : MonoBehaviour
 {
     [SerializeField] private GameObject explainUI;
+    [SerializeField] private GameObject pullingUI;
     [SerializeField] private Button throwBtn, LibBtn;
     [SerializeField] private Image blocker;
     [SerializeField] private RectTransform LibMain;
@@ -41,32 +42,25 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsLibOpend == false)
-        {
-            if (IsThrowed)
-            {
-                print("현재 자석 상태 : 던져짐");
-            }
-            else
-            {
-                ThrowBtnClicked();
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             LibraryBtnClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            PullSuccess();
         }
     }
     public void ThrowBtnClicked()
     {
         throwBtn.gameObject.SetActive(false);
         throwBtn.interactable = false;
-        MagnetThrowed();
+        pullingUI.SetActive(true);
+        //MagnetThrowed();//완료
     }
-    private void MagnetThrowed()
+    public void PullSuccess()
     {
         //대충 던지는 애니메이션
-        //대충 끌어올리는 행동?
         if (/*그 행동이 True 이면*/true)
         {
             SetRandomItem();

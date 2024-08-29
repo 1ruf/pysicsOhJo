@@ -5,10 +5,12 @@ using UnityEngine.UI;
 
 public class SpaceClick : MonoBehaviour
 {
-    [SerializeField] private float _decreaseRate = 0.05f; // 게이지가 줄어드는 속도
-    [SerializeField] private float _decreaseInterval = 1.0f; // 게이지 감소 간격 (초)
+    [SerializeField] private FishingSystemMain mainScript;
+    [SerializeField] private float _decreaseRate = 0.1f; // 게이지가 줄어드는 속도
+    [SerializeField] private float _decreaseInterval = 0.1f; // 게이지 감소 간격 (초)
     public Image _slider;
 
+    private bool _firstPressed = false; // 스페이스바가 처음 눌렸는지 여부를 확인하는 변수
     private float _increaseAmount = 0.2f; // 초기 증가량
     private float _currentValue = 0f; // 현재 슬라이더 값
     private float _maxValue = 1.0f; // 최대 게이지 값
@@ -17,16 +19,23 @@ public class SpaceClick : MonoBehaviour
     private void Start()
     {
         // 슬라이더를 초기화합니다.
-        _slider.fillAmount = _currentValue;
+        _currentValue = 0.5f;
 
-        // 일정 시간마다 게이지를 감소시키는 코루틴 시작
-        _decreaseCoroutine = StartCoroutine(DecreaseOverTime());
+        _slider.fillAmount = _currentValue;
+        // 코루틴은 처음에는 시작하지 않습니다.
+        //_decreaseCoroutine = StartCoroutine(DecreaseOverTime());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (!_firstPressed)
+            {
+                _firstPressed = true; // 첫 번째 눌림 체크
+                _decreaseCoroutine = StartCoroutine(DecreaseOverTime()); // 코루틴 시작
+            }
+
             Increase();  // 스페이스바를 누를 때마다 게이지 증가
             SliderUpdate(); // 슬라이더 UI 업데이트
         }
@@ -43,9 +52,8 @@ public class SpaceClick : MonoBehaviour
         }
         else
         {
-            _increaseAmount = 0.1f ;
+            _increaseAmount = 0.1f;
         }
-
 
         // 최대치를 넘지 않도록 클램프
         _currentValue = Mathf.Clamp(_currentValue, 0f, _maxValue);
@@ -66,12 +74,21 @@ public class SpaceClick : MonoBehaviour
     private void OnMaxValueReached()
     {
         // 최대치에 도달했을 때 발생하는 이벤트
-        Debug.Log("Max Value Reached! 이벤트 발생!");
-
+        mainScript.PullSuccess();
+        gameObject.SetActive(false);
         // 최대치에 도달하면 증가량 초기화
-        _increaseAmount = 0.2f;
+        ResetValue();
     }
-
+    private void ResetValue()
+    {
+        _firstPressed = false; // 스페이스바가 처음 눌렸는지 여부를 확인하는 변수
+        _increaseAmount = 0.2f; // 초기 증가량
+        _currentValue = 0f; // 현재 슬라이더 값
+        _maxValue = 1.0f; // 최대 게이지 값
+        _firstPressed = false;
+        _currentValue = 0.5f;
+        _slider.fillAmount = _currentValue;
+    }
     private IEnumerator DecreaseOverTime()
     {
         while (true)
@@ -107,4 +124,5 @@ public class SpaceClick : MonoBehaviour
             StopCoroutine(_decreaseCoroutine);
         }
     }
+
 }
