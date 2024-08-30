@@ -18,7 +18,7 @@ public class FishingSystemMain : MonoBehaviour
         { 
         /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",
 
-        /*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "찢어진 중국집 전단지", "녹슨 가위", "지퍼 손잡이",
+        /*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "중국집 쿠폰", "녹슨 가위", "지퍼 손잡이",
 
         /*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",
 
@@ -165,6 +165,7 @@ public class FishingSystemMain : MonoBehaviour
     }
     public void LibraryBtnClicked()
     {
+        //아이템들이 있는지 확인후 생상 조정
         if (LibBtnCool == false)
         {
             if (IsLibOpend)
@@ -203,5 +204,10 @@ public class FishingSystemMain : MonoBehaviour
     {
         explainUI.SetActive(true);
         _explainSet.SetValue(ItemNum, inventoryList);
+    }
+    public void InformBtnClickedForImage(Image image)
+    {
+        print("클릭됨");
+        _explainSet.TakeImage(image);
     }
 }

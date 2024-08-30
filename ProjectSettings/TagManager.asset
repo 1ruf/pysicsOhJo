@@ -47,3 +47,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Sky
+    uniqueID: 355411617
+    locked: 0
+  - name: Clouds
+    uniqueID: 2620903337
+    locked: 0
+  - name: Sea
+    uniqueID: 1825942895
+    locked: 0
+  - name: FishingRod
+    uniqueID: 1616628981
+    locked: 0
