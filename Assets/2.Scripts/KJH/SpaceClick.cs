@@ -19,7 +19,7 @@ public class SpaceClick : MonoBehaviour
     private void Start()
     {
         // 슬라이더를 초기화합니다.
-        _currentValue = 0.5f;
+        _currentValue = 0f;
 
         _slider.fillAmount = _currentValue;
         // 코루틴은 처음에는 시작하지 않습니다.
@@ -52,7 +52,7 @@ public class SpaceClick : MonoBehaviour
         }
         else
         {
-            _increaseAmount = 0.1f;
+            _increaseAmount = 0.12f;
         }
 
         // 최대치를 넘지 않도록 클램프
@@ -86,7 +86,7 @@ public class SpaceClick : MonoBehaviour
         _currentValue = 0f; // 현재 슬라이더 값
         _maxValue = 1.0f; // 최대 게이지 값
         _firstPressed = false;
-        _currentValue = 0.5f;
+        _currentValue = 0f;
         _slider.fillAmount = _currentValue;
     }
     private IEnumerator DecreaseOverTime()

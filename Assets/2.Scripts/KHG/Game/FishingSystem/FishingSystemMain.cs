@@ -61,14 +61,7 @@ public class FishingSystemMain : MonoBehaviour
     public void PullSuccess()
     {
         //대충 던지는 애니메이션
-        if (/*그 행동이 True 이면*/true)
-        {
-            SetRandomItem();
-        }
-        else
-        {
-            print("낚시 실패");
-        }
+        SetRandomItem();
     }
     private void SetRandomItem()
     {
