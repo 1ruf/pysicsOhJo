@@ -59,7 +59,10 @@ public class FishingSystemMain : MonoBehaviour
             PullSuccess();
         }
     }
-
+    private void FixedUpdate()
+    {
+        SaveItemImage();
+    }
 
 
     private void GetInventoryInform()
@@ -196,17 +199,20 @@ public class FishingSystemMain : MonoBehaviour
     {
         if (!(inventoryList.Contains(ItemNum)))
         {
-            SaveItemImage();
             print(OJname + ",»Ò±Õµµ:" + OJrarity);
             inventoryList.Add(ItemNum);
             _explainSet.LibrarySet(inventoryList);
+            SaveItemImage();
         }
         else
             print("¿ÃπÃ¿÷¿Ω");
+        SaveItemImage();
         print(inventoryList.Count);
     }
     public void LibraryBtnClicked()
     {
+        SaveItemImage();
+
         if (LibBtnCool == false)
         {
             if (IsLibOpend)
@@ -225,11 +231,11 @@ public class FishingSystemMain : MonoBehaviour
     private void SaveItemImage()
     {
         print("Blocked1");
-        for (int i = 0; i <= inventoryList.Count; i++)
+        for (int i = 0; i <= 23; i++)
         {
-            print("Blocked2");
             if (inventoryList.Contains(i))
             {
+                print(i);
                 /*nowColor = new Color(255, 255, 255);
                 itemImages[i].color = nowColor;*/
                 Color color = new Color(255, 255, 255);
