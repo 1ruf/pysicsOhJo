@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class FishingSystemMain : MonoBehaviour
 {
     [SerializeField] private GameObject explainUI;
     [SerializeField] private GameObject pullingUI;
     [SerializeField] private Button throwBtn, LibBtn;
-    [SerializeField] private Image blocker;
+    [SerializeField] private Image blocker, popUpitemImage;
     [SerializeField] private Image[] itemImages = { };
-    [SerializeField] private RectTransform LibMain;
+    [SerializeField] private RectTransform LibMain, ItemPopupScreen;
+    [SerializeField] private TMP_Text popUpTxt;
 
     private int nowItemNum;
 
@@ -26,7 +28,7 @@ public class FishingSystemMain : MonoBehaviour
 
         /*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",
 
-        /*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "문짝이 뜯겨나간 자동차",
+        /*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "자동차에서 뜯겨나온 문짝",
 
         /*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",
 
@@ -42,7 +44,7 @@ public class FishingSystemMain : MonoBehaviour
     private void Start()
     {
         //GetInventoryInform();
-
+        ItemPopupScreen.DOAnchorPosY(-1000, 0);
         blocker.DOFade(0, 1).OnComplete(() => blocker.gameObject.SetActive(false));
         LibMain.anchoredPosition = new Vector2(1700, 0);
     }
@@ -94,12 +96,25 @@ public class FishingSystemMain : MonoBehaviour
     }
     public void PullSuccess()
     {
-        //대충 던지는 애니메이션
+        
         SetRandomItem();
     }
     private void SetRandomItem()
     {
         SetValue();
+        StartCoroutine(PopUpItem(nowItemNum));
+    }
+    private IEnumerator PopUpItem(int ItemNum)
+    {
+        popUpitemImage.sprite = itemImages[ItemNum].sprite;
+        popUpTxt.text = OJrarity;
+
+        ItemPopupScreen.DOAnchorPosY(0, 1.2f);
+        yield return new WaitForSeconds(1.5f);
+        ItemPopupScreen.DOAnchorPosY(-1000, 1.2f); //2.4f
+        yield return new WaitForSeconds(1.2f);
+        throwBtn.gameObject.SetActive(true);
+        throwBtn.interactable = true;
     }
     private void SetValue()
     {
@@ -172,17 +187,16 @@ public class FishingSystemMain : MonoBehaviour
             OJname = "error";
         }*/
         #endregion
+        nowItemNum = ItemNum;
 
         OJname = itemNames[ItemNum]; //아이템 이름을 번호에 맞게 지정
         SaveToInventory(ItemNum);
-        throwBtn.gameObject.SetActive(true);
-        throwBtn.interactable = true;
     }
     private void SaveToInventory(int ItemNum)
     {
         if (!(inventoryList.Contains(ItemNum)))
         {
-            SaveItemImage(ItemNum);
+            SaveItemImage();
             print(OJname + ",희귀도:" + OJrarity);
             inventoryList.Add(ItemNum);
             _explainSet.LibrarySet(inventoryList);
@@ -208,14 +222,19 @@ public class FishingSystemMain : MonoBehaviour
             }
         }
     }
-    private void SaveItemImage(int ItemNum)
+    private void SaveItemImage()
     {
+        print("Blocked1");
         for (int i = 0; i <= inventoryList.Count; i++)
         {
+            print("Blocked2");
             if (inventoryList.Contains(i))
             {
-                nowColor = new Color(255, 255, 255);
-                itemImages[i].color = nowColor;
+                /*nowColor = new Color(255, 255, 255);
+                itemImages[i].color = nowColor;*/
+                Color color = new Color(255, 255, 255);
+                itemImages[i].color = color;
+                print(itemImages[i].color);
             }
         }
     }
@@ -240,6 +259,7 @@ public class FishingSystemMain : MonoBehaviour
 
     public void InformBtnClicked(int ItemNum)
     {
+        IsLibOpend = false;
         nowItemNum = ItemNum;
         explainUI.SetActive(true);
         _explainSet.SetValue(ItemNum, inventoryList);
