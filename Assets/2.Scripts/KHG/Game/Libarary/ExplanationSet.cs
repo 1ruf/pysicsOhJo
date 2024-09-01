@@ -10,6 +10,7 @@ public class ExplanationSet : MonoBehaviour
     [SerializeField] private TMP_Text ITname, ITrarity, ITexplain;
     [SerializeField] private Image itemImage;
 
+    private Color color = new Color(0,0,0);
     private string[] itemInformation = { "", 
     /*1*/    "안경테 따위가 엄청 무겁다. 귓볼 트레이닝이라도 했나보다.",                                                 //안경테
     /*2*/    "끝부분이 살짝 구부러진 클립이다. 문서 정리용으론 부적합한 것 같다...다른곳에 쓸수 있을지도?",                                                 //클립
@@ -21,11 +22,11 @@ public class ExplanationSet : MonoBehaviour
     /*8*/    "전단지에 흐릿하게 무언가 적혀있다...짜장면...5개 모으면 무료....읽을수 있는것은 여기까지이다.", 
     /*9*/    "끝부분이 녹이 슨 가위이다. 살짝만 베여도 파상풍으로 죽을거같다.", 
     /*10*/    "지퍼 손잡이가 꽤 크다. 손잡이에는 유명 브랜드의 로고가 박혀있다.", 
-    /*11*/    "", 
-    /*12*/    "", 
-    /*13*/    "", 
+    /*11*/    "손잡이가 없는 망치 '똘망치'는 무기 박물관의 창고에 버려져 있던 쓸모없는 유물로, 다른 도구들에게 조롱당하며 지냈습니다. 하지만 어느 날, 외계 침략자들이 박물관을 공격해 손잡이가 없는 똘망치만이 그들의 레이저를 튕겨내며 맞서 싸울 수 있다는 것이 밝혀졌습니다. 똘망치는 스스로 날아다니며 외계인들의 함선을 파괴하고, 결국 지구를 구해내면서 모든 도구들에게 영웅으로 추앙받게 되었습니다.", 
+    /*12*/    "녹슨 식칼이다. 흐릿하게 핏자국이 보이는거같다..?", 
+    /*13*/    "앞집 BMW 차키가 ", 
     /*14*/    "", 
-    /*15*/    "", 
+    /*15*/    "내가 이 모터에 이름을 어떻게 알고있는진 모르겠지만, 아무튼 획득했다.", 
     /*16*/    "",
     /*17*/    "이게 무슨 책이지 어디 보자… 제목이… '이 세계는 이미 내가 구해서 부와 권력을 손에 넣었고, 여기사와 여마왕과 성에서 즐겁게 살고 있으니 나 말고 다른 용자는 더 이상 이세계에 오지 마세요.' 라고 쓰여져 있다…", 
     /*18*/    "", 
@@ -33,11 +34,13 @@ public class ExplanationSet : MonoBehaviour
     /*20*/    "", 
     /*21*/    "", 
     /*22*/    "나노머신이다 애송아! 자석에 의해 자기장이 생기는 반자성체이지. 넌 날 낚을 수 없다, 잭!", };
-    public void TakeImage(Image image)
+    public void TakeImage(Image image, Color nowColor)
     {
+        nowColor = color;
         if (image)
         {
             itemImage.sprite = image.sprite;
+            itemImage.color = nowColor;
         }
         else
         {
@@ -45,10 +48,10 @@ public class ExplanationSet : MonoBehaviour
         }
     }
     private string nowRarity = "Unknown";
-    public void SetValue(int ItemNum, List<int> inventory) //정해진 아이템 번홀ㄹ 받아옴 , 리스트도 같이 받아옴(감지용)
+    public void SetValue(int ItemNum, List<int> inventory) //정해진 아이템 번호를 받아옴 , 리스트도 같이 받아옴(감지용)
     {
         RarityCheck(ItemNum); //아이템의 희귀도 체크
-        TakeImage(itemImage);
+        TakeImage(itemImage, color);
         if (inventory.Contains(ItemNum)) //획득 리스트에 클릭한 버튼의 아이템이 있는지 확인
         {
             SetText(MainSystem.itemNames[ItemNum], itemInformation[ItemNum]);

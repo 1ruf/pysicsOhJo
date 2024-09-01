@@ -10,8 +10,12 @@ public class FishingSystemMain : MonoBehaviour
     [SerializeField] private GameObject pullingUI;
     [SerializeField] private Button throwBtn, LibBtn;
     [SerializeField] private Image blocker;
+    [SerializeField] private Image[] itemImages = { };
     [SerializeField] private RectTransform LibMain;
 
+    private int nowItemNum;
+
+    private Color nowColor;
     private ExplanationSet _explainSet;
     private List<int> inventoryList = new List<int>(); 
     public string[] itemNames = 
@@ -37,6 +41,8 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void Start()
     {
+        //GetInventoryInform();
+
         blocker.DOFade(0, 1).OnComplete(() => blocker.gameObject.SetActive(false));
         LibMain.anchoredPosition = new Vector2(1700, 0);
     }
@@ -51,6 +57,34 @@ public class FishingSystemMain : MonoBehaviour
             PullSuccess();
         }
     }
+
+
+
+    private void GetInventoryInform()
+    {
+        for (int i = 0; i <= 22; i++)
+        {
+            int value = PlayerPrefs.GetInt(("ItemNum" + i), 0);
+            if (value == 0)
+            {
+                inventoryList[i] = 0;
+            }
+            else
+            {
+                inventoryList[i] = value;
+            }
+        }
+        
+    }
+    private void SetInventoryInform()
+    {
+        for (int i = 0; i <= inventoryList.Count; i++)
+        {
+            PlayerPrefs.SetInt(("ItemNum" + i), i);
+        }
+    }
+
+
     public void ThrowBtnClicked()
     {
         throwBtn.gameObject.SetActive(false);
@@ -140,14 +174,15 @@ public class FishingSystemMain : MonoBehaviour
         #endregion
 
         OJname = itemNames[ItemNum]; //아이템 이름을 번호에 맞게 지정
-        SaveToInventory(ItemName, ItemNum);
+        SaveToInventory(ItemNum);
         throwBtn.gameObject.SetActive(true);
         throwBtn.interactable = true;
     }
-    private void SaveToInventory(string ItemName,int ItemNum)
+    private void SaveToInventory(int ItemNum)
     {
         if (!(inventoryList.Contains(ItemNum)))
         {
+            SaveItemImage(ItemNum);
             print(OJname + ",희귀도:" + OJrarity);
             inventoryList.Add(ItemNum);
             _explainSet.LibrarySet(inventoryList);
@@ -158,7 +193,6 @@ public class FishingSystemMain : MonoBehaviour
     }
     public void LibraryBtnClicked()
     {
-        //아이템들이 있는지 확인후 생상 조정
         if (LibBtnCool == false)
         {
             if (IsLibOpend)
@@ -171,6 +205,17 @@ public class FishingSystemMain : MonoBehaviour
                 LibAppear();
                 throwBtn.interactable = false;
                 IsLibOpend = true;
+            }
+        }
+    }
+    private void SaveItemImage(int ItemNum)
+    {
+        for (int i = 0; i <= inventoryList.Count; i++)
+        {
+            if (inventoryList.Contains(i))
+            {
+                nowColor = new Color(255, 255, 255);
+                itemImages[i].color = nowColor;
             }
         }
     }
@@ -195,12 +240,13 @@ public class FishingSystemMain : MonoBehaviour
 
     public void InformBtnClicked(int ItemNum)
     {
+        nowItemNum = ItemNum;
         explainUI.SetActive(true);
         _explainSet.SetValue(ItemNum, inventoryList);
     }
     public void InformBtnClickedForImage(Image image)
     {
         print("클릭됨");
-        _explainSet.TakeImage(image);
+        _explainSet.TakeImage(image, nowColor);
     }
 }
