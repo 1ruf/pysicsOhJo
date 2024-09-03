@@ -75,6 +75,6 @@ public class MainMenu : MonoBehaviour
     }
     public void QuitBtnClicked()
     {
-
+        Application.Quit();
     }
 }

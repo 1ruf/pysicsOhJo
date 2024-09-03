@@ -28,7 +28,7 @@ public class FishingSystemMain : MonoBehaviour
 
         /*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",
 
-        /*비행기 파편(3)*/"비행기 파편", "금속끈으로 묶인 책", "자동차에서 뜯겨나온 문짝",
+        /*superRare(3)*/"비행기 파편", "금속끈으로 묶인 책", "자동차에서 뜯겨나온 문짝",
 
         /*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",
 
@@ -54,14 +54,14 @@ public class FishingSystemMain : MonoBehaviour
         {
             LibraryBtnClicked();
         }
-        if (Input.GetKeyDown(KeyCode.Backspace))
+        if (Input.GetKey(KeyCode.Backspace))
         {
             PullSuccess();
         }
     }
     private void FixedUpdate()
     {
-        SaveItemImage();
+       // SaveItemImage();
     }
 
 
@@ -273,6 +273,7 @@ public class FishingSystemMain : MonoBehaviour
     public void InformBtnClickedForImage(Image image)
     {
         print("클릭됨");
+        nowColor = image.color;
         _explainSet.TakeImage(image, nowColor);
     }
 }
