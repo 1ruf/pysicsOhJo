@@ -17,6 +17,7 @@ public class FishingSystemMain : MonoBehaviour
     [SerializeField] private TMP_Text popUpTxt, questTxt,subTitle;
 
     private int nowItemNum;
+    private string nowAnswer;
 
     private Color nowColor;
     private ExplanationSet _explainSet;
@@ -38,6 +39,10 @@ public class FishingSystemMain : MonoBehaviour
     private string OJname;
     private string OJrarity = "알수 없음";
     private bool IsThrowed, IsLibOpend, LibBtnCool;
+
+    private string[] Q = { "1번 문제", "2번 문제", "3번 문제", "4번 문제", "5번 문제", "6번 문제", "7번 문제" };
+    private string[] A = { "1번 답"  , "2번 답", "3번 답", "4번 답", "5번 답", "6번 답", "7번 답" };
+
     private void Awake()
     {
         _explainSet = explainUI.GetComponent<ExplanationSet>();
@@ -282,21 +287,36 @@ public class FishingSystemMain : MonoBehaviour
 
     private void OpenQuest()
     {
-        SetQuestion();
+        questionUI.gameObject.SetActive(true);
+        questTxt.text = "";
+        int randNum = SetQuestion();
+        SetQAText(randNum);
         questionUI.DOAnchorPosY(0, 0.5f);
     }
     public void answerCompleted()
     {
         questionUI.DOAnchorPosY(1500, 0.5f);
-        if (answer.text == "철이라서")
+        if (answer.text == nowAnswer)
         {
+            questionUI.gameObject.SetActive(false);
+            StartCoroutine(success());
             pullingUI.SetActive(true);
         }
         else
         {
+            questTxt.text = "";
             subTitle.text = "실패!";
-            failed();
+            subTitle.color = new Color(255,0,0);
+            StartCoroutine(failed());
         }
+    }
+    private IEnumerator success()
+    {
+        subTitle.text = "정답!";
+        subTitle.color = new Color(0, 125, 255);
+        yield return new WaitForSeconds(0.7f);    
+        subTitle.text = "";
+        
     }
     private IEnumerator failed()
     {
@@ -304,9 +324,16 @@ public class FishingSystemMain : MonoBehaviour
         subTitle.text = "";
         throwBtn.gameObject.SetActive(true);
         throwBtn.interactable = true;
+        questionUI.gameObject.SetActive(false);
     }
-    private void SetQuestion()//문제 설정
+    private int SetQuestion()//문제 설정
     {
-        questTxt.text = "철이 뭐지";
+        int randNum = Random.Range(1, (Q.Length));
+        return randNum;
+    }
+    private void SetQAText(int num)
+    {
+        questTxt.text = Q[num];
+        nowAnswer = A[num];
     }
 }
