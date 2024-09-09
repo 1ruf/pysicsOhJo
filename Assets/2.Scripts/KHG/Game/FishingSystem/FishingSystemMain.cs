@@ -7,13 +7,14 @@ using TMPro;
 
 public class FishingSystemMain : MonoBehaviour
 {
+    [SerializeField] private TMP_InputField answer;
     [SerializeField] private GameObject explainUI;
     [SerializeField] private GameObject pullingUI;
     [SerializeField] private Button throwBtn, LibBtn;
     [SerializeField] private Image blocker, popUpitemImage;
     [SerializeField] private Image[] itemImages = { };
-    [SerializeField] private RectTransform LibMain, ItemPopupScreen;
-    [SerializeField] private TMP_Text popUpTxt;
+    [SerializeField] private RectTransform LibMain, ItemPopupScreen, questionUI;
+    [SerializeField] private TMP_Text popUpTxt, questTxt,subTitle;
 
     private int nowItemNum;
 
@@ -43,7 +44,9 @@ public class FishingSystemMain : MonoBehaviour
     }
     private void Start()
     {
+        subTitle.text = "";
         //GetInventoryInform();
+        questionUI.anchoredPosition = new Vector2(0, 1500);
         ItemPopupScreen.DOAnchorPosY(-1000, 0);
         blocker.DOFade(0, 1).OnComplete(() => blocker.gameObject.SetActive(false));
         LibMain.anchoredPosition = new Vector2(1700, 0);
@@ -54,7 +57,7 @@ public class FishingSystemMain : MonoBehaviour
         {
             LibraryBtnClicked();
         }
-        if (Input.GetKey(KeyCode.Backspace))
+        if (Input.GetKey(KeyCode.RightShift))
         {
             PullSuccess();
         }
@@ -94,7 +97,7 @@ public class FishingSystemMain : MonoBehaviour
     {
         throwBtn.gameObject.SetActive(false);
         throwBtn.interactable = false;
-        pullingUI.SetActive(true);
+        OpenQuest();
         //MagnetThrowed();//¿Ï·á
     }
     public void PullSuccess()
@@ -275,5 +278,35 @@ public class FishingSystemMain : MonoBehaviour
         print("Å¬¸¯µÊ");
         nowColor = image.color;
         _explainSet.TakeImage(image, nowColor);
+    }
+
+    private void OpenQuest()
+    {
+        SetQuestion();
+        questionUI.DOAnchorPosY(0, 0.5f);
+    }
+    public void answerCompleted()
+    {
+        questionUI.DOAnchorPosY(1500, 0.5f);
+        if (answer.text == "Ã¶ÀÌ¶ó¼­")
+        {
+            pullingUI.SetActive(true);
+        }
+        else
+        {
+            subTitle.text = "½ÇÆÐ!";
+            failed();
+        }
+    }
+    private IEnumerator failed()
+    {
+        yield return new WaitForSeconds(0.7f);
+        subTitle.text = "";
+        throwBtn.gameObject.SetActive(true);
+        throwBtn.interactable = true;
+    }
+    private void SetQuestion()//¹®Á¦ ¼³Á¤
+    {
+        questTxt.text = "Ã¶ÀÌ ¹¹Áö";
     }
 }
