@@ -16,6 +16,7 @@ public class FishingSystemMain : MonoBehaviour
     [SerializeField] private RectTransform LibMain, ItemPopupScreen, questionUI;
     [SerializeField] private TMP_Text popUpTxt, questTxt,subTitle;
 
+    private List<int> visibledQ = new List<int>();
     private int nowItemNum;
     private string nowAnswer;
 
@@ -329,6 +330,16 @@ public class FishingSystemMain : MonoBehaviour
     private int SetQuestion()//문제 설정
     {
         int randNum = Random.Range(1, (Q.Length));
+        while (true)
+        {
+            if (visibledQ == null)
+                break;
+            else if (!(visibledQ.Contains(randNum)))
+                break;
+            else
+                visibledQ.RemoveAll(num => num <= visibledQ.Count);
+        }
+        print(randNum);
         return randNum;
     }
     private void SetQAText(int num)
