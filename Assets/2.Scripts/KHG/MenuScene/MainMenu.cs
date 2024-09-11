@@ -8,14 +8,13 @@ using DG.Tweening;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private Image background,BlockFrame;
-    [SerializeField] private GameObject playBtn, settingBtn, quitBtn, mainTitle;
-    private RectTransform title, pBtn, sBtn, qBtn;
+    [SerializeField] private GameObject playBtn, quitBtn, mainTitle;
+    private RectTransform title, pBtn, qBtn;
     private int btnStartY = -800, titleStartY = 1000;
     private void Awake()
     {
         title = mainTitle.GetComponent<RectTransform>();
         pBtn = playBtn.GetComponent<RectTransform>();
-        sBtn = settingBtn.GetComponent<RectTransform>();
         qBtn = quitBtn.GetComponent<RectTransform>();
     }
     private void Start()
@@ -26,7 +25,6 @@ public class MainMenu : MonoBehaviour
     {
         title.anchoredPosition = new Vector2(0, titleStartY);
         pBtn.anchoredPosition = new Vector2(pBtn.anchoredPosition.x, btnStartY);
-        sBtn.anchoredPosition = new Vector2(sBtn.anchoredPosition.x, btnStartY);
         qBtn.anchoredPosition = new Vector2(qBtn.anchoredPosition.x, btnStartY);
         background.DOFade(0, 0);
     }
@@ -39,8 +37,6 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         pBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.2f);
-        sBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
-        yield return new WaitForSeconds(0.2f);
         qBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
     }
     private IEnumerator BtnDisapper()
@@ -49,17 +45,15 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         pBtn.DOMoveY(btnStartY, 1).SetEase(Ease.InBack);
         yield return new WaitForSeconds(0.2f);
-        sBtn.DOMoveY(btnStartY, 1).SetEase(Ease.InBack);
         yield return new WaitForSeconds(0.2f);
         qBtn.DOMoveY(btnStartY, 1).SetEase(Ease.InBack);
+        yield return new WaitForSeconds(0.7f);
     }
     private IEnumerator BtnReArise()
     {
         title.DOMoveY(750, 2);
         yield return new WaitForSeconds(0.7f);
         pBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
-        yield return new WaitForSeconds(0.2f);
-        sBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.2f);
         qBtn.DOMoveY(260, 1).SetEase(Ease.OutBack);
     }
@@ -81,6 +75,6 @@ public class MainMenu : MonoBehaviour
     }
     public void QuitBtnClicked()
     {
-
+        Application.Quit();
     }
 }

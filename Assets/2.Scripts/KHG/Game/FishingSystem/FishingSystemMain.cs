@@ -3,84 +3,366 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class FishingSystemMain : MonoBehaviour
 {
-    ItemClass Item = new ItemClass();
-    [SerializeField] private Button throwBtn;
+    [SerializeField] private TMP_InputField answer;
+    [SerializeField] private GameObject explainUI;
+    [SerializeField] private GameObject pullingUI;
+    [SerializeField] private Button throwBtn, LibBtn;
+    [SerializeField] private Image blocker, popUpitemImage;
+    [SerializeField] private Image[] itemImages = { };
+    [SerializeField] private RectTransform LibMain, ItemPopupScreen, questionUI;
+    [SerializeField] private TMP_Text popUpTxt, questTxt,subTitle;
 
-    List<int> inventoryList = new List<int>(); // 0 None , 1 안경테 , 2 금고
-    private int num;
+    private List<int> visibledQ = new List<int>();
+    private int nowItemNum;
+    private string nowAnswer;
+
+    private Color nowColor;
+    private ExplanationSet _explainSet;
+    private List<int> inventoryList = new List<int>(); 
+    public string[] itemNames = 
+        { 
+        /*common(5)*/"아무것도 없는", "안경테", "클립", "바늘", "젓가락(한짝)", "못",
+
+        /*uncommon(5)*/"누군가의 잃어버린 이어폰", "부서진 샤프", "중국집 쿠폰", "녹슨 가위", "지퍼 손잡이",
+
+        /*rare(5)*/"손잡이가 없는 망치", "녹슨 식칼", "앞집 BMW 차키", "자물쇠", "RsW6모터",
+
+        /*superRare(3)*/"비행기 파편", "금속끈으로 묶인 책", "자동차에서 뜯겨나온 문짝",
+
+        /*legendary(2)*/"쪼그라든 타이탄 잠수정", "타이타닉호",
+
+        /*Mythic*/"\"철\"권", "나노머신을 두른 암스트롱 상원의원"
+    };
     private string OJname;
-    private string Rarity;
-    private bool IsThrowed;
+    private string OJrarity = "알수 없음";
+    private bool IsThrowed, IsLibOpend, LibBtnCool;
+
+    private string[] Q = { 
+        "외부 자기장이 사라져도 자기장을 오래 유지할수 있는 자성체는?",
+        "상자성체는 상자성을 가지는 물체로, 강자성체와 달리 내부에 ㅁㅁㅁㅁ이 없다. ㅁㅁㅁㅁ에 들어갈 말은?",
+        "물질이 자석에 반응하는 성질을 뭐라고 하는가?", 
+        "자성을 띄는 물체를 무엇이라고 하는가?",
+        "반자성체는 외부 자기장과 반대 방향으로 자기화되었다가 외부 자기장을 제거하면 자기화 상태가 바로 사라진다.(O,X)",
+        "강자성체는 외부 자기장을 제거해도 자기화된 상태가 오래 유지된다.(O,X)",
+        "반자성체는 반자성을 가지는 물체로, 내부에 ㅁㅁㅁ을 가지는 원자가 없다. ㅁㅁㅁ 에 들어갈 말은?" };
+    private string[] A = { "강자성체"  , "자기구역", "자성", "자성체", "O", "O", "자기장" };
+
+    private void Awake()
+    {
+        _explainSet = explainUI.GetComponent<ExplanationSet>();
+    }
+    private void Start()
+    {
+        subTitle.text = "";
+        //GetInventoryInform();
+        questionUI.anchoredPosition = new Vector2(0, 1500);
+        ItemPopupScreen.DOAnchorPosY(-1000, 0);
+        blocker.DOFade(0, 1).OnComplete(() => blocker.gameObject.SetActive(false));
+        LibMain.anchoredPosition = new Vector2(1700, 0);
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (IsThrowed)
+            LibraryBtnClicked();
+        }
+        if (Input.GetKey(KeyCode.RightShift))
+        {
+            PullSuccess();
+        }
+    }
+    private void FixedUpdate()
+    {
+       // SaveItemImage();
+    }
+
+
+    private void GetInventoryInform()
+    {
+        for (int i = 0; i <= 22; i++)
+        {
+            int value = PlayerPrefs.GetInt(("ItemNum" + i), 0);
+            if (value == 0)
             {
-                print("현재 자석 상태 : 던져짐");
+                inventoryList[i] = 0;
             }
             else
             {
-                ThrowBtnClicked();
+                inventoryList[i] = value;
             }
         }
+        
     }
+    private void SetInventoryInform()
+    {
+        for (int i = 0; i <= inventoryList.Count; i++)
+        {
+            PlayerPrefs.SetInt(("ItemNum" + i), i);
+        }
+    }
+
+
     public void ThrowBtnClicked()
     {
+        throwBtn.gameObject.SetActive(false);
         throwBtn.interactable = false;
-        MagnetThrowed();
+        OpenQuest();
+        //MagnetThrowed();//완료
     }
-    private void MagnetThrowed()
+    public void PullSuccess()
     {
-        //대충 전지는 애니메이션
+        
         SetRandomItem();
     }
     private void SetRandomItem()
     {
-        int num = Random.Range(0, 4);//ENUM 길이);
-        switch (Item.SetItem(num))
-        {
-            case ItemClass.item.None:
-                SetValue("아무것도 끌어올리지 못했다..", 0 , 0); //이름,희귀도,아이템 번호
-                break;
-            case ItemClass.item.glassess:
-                SetValue("망가진 안경테" ,1 , 1);
-                break;
-            case ItemClass.item.vault:
-                SetValue("무언가 들어있는 금고", 3 , 2);
-                break;
-        }
+        SetValue();
+        StartCoroutine(PopUpItem(nowItemNum));
     }
-    private void SetValue(string ItemName, int ItemPrice, int ItemNum)
+    private IEnumerator PopUpItem(int ItemNum)
     {
-        string value = "0";
+        popUpitemImage.sprite = itemImages[ItemNum].sprite;
+        popUpTxt.text = OJrarity;
+
+        ItemPopupScreen.DOAnchorPosY(0, 1.2f);
+        yield return new WaitForSeconds(1.5f);
+        ItemPopupScreen.DOAnchorPosY(-1000, 1.2f); //2.4f
+        yield return new WaitForSeconds(1.2f);
+        throwBtn.gameObject.SetActive(true);
+        throwBtn.interactable = true;
+    }
+    private void SetValue()
+    {
+        string ItemName = "null";
+        int ItemNum = 0;
+        float randomValue = Random.Range(0f, 100.0f);
         OJname = ItemName;
-        Rarity = ItemPrice.ToString();
-        if (ItemNum > 0)
+        if (randomValue <= 40)
         {
-            if (ItemNum == 2)
+            OJrarity = "common";                                                             //40
+            ItemNum = UnityEngine.Random.Range(1, 6);
+        }
+        else if (randomValue <= 75)
+        {
+            OJrarity = "uncommon";                                                           //35
+            ItemNum = UnityEngine.Random.Range(6, 11); // Random number between 6 and 10
+        }
+        else if (randomValue <= 90)
+        {
+            OJrarity = "rare";                                                               //15
+            ItemNum = UnityEngine.Random.Range(11, 16); // Random number between 11 and 15
+        }
+        else if (randomValue <= 97.9)
+        {
+            // Epic: 16-18 (cumulative 10% range)
+            OJrarity = "super rare";                                                         //7.9
+            ItemNum = UnityEngine.Random.Range(16, 19); // Random number between 16 and 18
+        }
+        else if (randomValue <= 99.5)
+        {
+            // Legendary: 19-20 (cumulative 4% range)
+            OJrarity = "legendary";                                                             //1.6
+            ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
+        }
+        else 
+        {
+            // Mythic: 21 (cumulative 1% range)
+            OJrarity = "mythic";                                                            //0.5
+            ItemNum = UnityEngine.Random.Range(21, 23);
+        }
+
+        #region 예비
+        /*if (ItemNum > 0 && ItemNum <= 10)
+        {
+            OJrarity = "common"; //35%
+        }
+        else if (ItemNum > 5 && ItemNum <= 10)
+        {
+            OJrarity = "uncommon"; //30%
+        }
+        else if (ItemNum > 10 && ItemNum <= 15)
+        {
+            OJrarity = "rare"; // 20%
+        }
+        else if (ItemNum > 15 && ItemNum <= 18)
+        {
+            OJrarity = "epic"; // 10%
+        }
+        else if (ItemNum > 18 && ItemNum <= 20)
+        {
+            OJrarity = "Legendary"; //4%
+        }
+        else if (ItemNum == 21)
+        {
+            OJrarity = "Mythic"; //1%
+        }
+        else
+        {
+            OJrarity = "error";
+            OJname = "error";
+        }*/
+        #endregion
+        nowItemNum = ItemNum;
+
+        OJname = itemNames[ItemNum]; //아이템 이름을 번호에 맞게 지정
+        SaveToInventory(ItemNum);
+    }
+    private void SaveToInventory(int ItemNum)
+    {
+        if (!(inventoryList.Contains(ItemNum)))
+        {
+            print(OJname + ",희귀도:" + OJrarity);
+            inventoryList.Add(ItemNum);
+            _explainSet.LibrarySet(inventoryList);
+            SaveItemImage();
+        }
+        else
+            print("이미있음");
+        SaveItemImage();
+        print(inventoryList.Count);
+    }
+    public void LibraryBtnClicked()
+    {
+        SaveItemImage();
+
+        if (LibBtnCool == false)
+        {
+            if (IsLibOpend)
             {
-                value = "???";
+                LibDisappear();
+                IsLibOpend = false;
             }
             else
             {
-                value = Rarity.ToString();
+                LibAppear();
+                throwBtn.interactable = false;
+                IsLibOpend = true;
             }
         }
-        Rarity = value;
-        SaveToInventory(ItemName, Rarity, ItemNum);
-        print(OJname + ",희귀도:" + Rarity);
-        throwBtn.interactable = true;
     }
-    private void SaveToInventory(string ItemName,string ItemPrice,int ItemNum)
+    private void SaveItemImage()
     {
-        if (!(inventoryList.Contains(ItemNum)))
-            inventoryList.Add(ItemNum);
+        print("Blocked1");
+        for (int i = 0; i <= 23; i++)
+        {
+            if (inventoryList.Contains(i))
+            {
+                print(i);
+                /*nowColor = new Color(255, 255, 255);
+                itemImages[i].color = nowColor;*/
+                Color color = new Color(255, 255, 255);
+                itemImages[i].color = color;
+                print(itemImages[i].color);
+            }
+        }
+    }
+    private void LibAppear()
+    {
+        StartCoroutine(LibBtnCooltimeChecker(1f));
+        LibMain.DOAnchorPosX(420, 1).SetEase(Ease.OutBack);
+    }
+    private void LibDisappear()
+    {
+        StartCoroutine(LibBtnCooltimeChecker(1f));
+        LibMain.DOAnchorPosX(1700, 1).SetEase(Ease.InBack).OnComplete(() => throwBtn.interactable = true);
+    }
+    private IEnumerator LibBtnCooltimeChecker(float t)
+    {
+        LibBtnCool = true;
+        LibBtn.interactable = false;
+        yield return new WaitForSeconds(t);
+        LibBtnCool = false;
+        LibBtn.interactable = true;
+    }
+
+    public void InformBtnClicked(int ItemNum)
+    {
+        IsLibOpend = false;
+        nowItemNum = ItemNum;
+        explainUI.SetActive(true);
+        _explainSet.SetValue(ItemNum, inventoryList);
+    }
+    public void InformBtnClickedForImage(Image image)
+    {
+        print("클릭됨");
+        nowColor = image.color;
+        _explainSet.TakeImage(image, nowColor);
+    }
+
+    private void OpenQuest()
+    {
+        questionUI.gameObject.SetActive(true);
+        questTxt.text = "";
+        int randNum = SetQuestion();
+        SetQAText(randNum);
+        questionUI.DOAnchorPosY(0, 0.5f);
+    }
+    public void answerCompleted()
+    {
+        questionUI.DOAnchorPosY(1500, 0.5f);
+        if (answer.text == nowAnswer)
+        {
+            questionUI.gameObject.SetActive(false);
+            StartCoroutine(success());
+            pullingUI.SetActive(true);
+        }
         else
-            print("이미있음");
-        print(inventoryList.Count);
+        {
+            questTxt.text = "";
+            subTitle.text = "실패!";
+            subTitle.color = new Color(255,0,0);
+            StartCoroutine(failed());
+        }
+    }
+    private IEnumerator success()
+    {
+        subTitle.text = "정답!";
+        subTitle.color = new Color(0, 125, 255);
+        yield return new WaitForSeconds(0.7f);    
+        subTitle.text = "";
+        
+    }
+    private IEnumerator failed()
+    {
+        yield return new WaitForSeconds(0.7f);
+        subTitle.text = "";
+        throwBtn.gameObject.SetActive(true);
+        throwBtn.interactable = true;
+        questionUI.gameObject.SetActive(false);
+    }
+    private int SetQuestion()//문제 설정
+    {
+        int randNum = Random.Range(1, (Q.Length));
+        /*while (true)
+        {
+            if (visibledQ.Contains(randNum))
+            {
+                randNum = Random.Range(1, (Q.Length));
+                SetQuestion();
+            }
+            else if (visibledQ.Contains(randNum) == false)
+                break;
+            else
+            {
+
+                for (int i = 0; i <= visibledQ.Count; i++)
+                {
+                    visibledQ.Remove(i);
+                }
+                break;
+            }
+        }
+        visibledQ.Add(randNum);*/
+        print(randNum);
+        return randNum;
+    }
+    private void SetQAText(int num)
+    {
+        questTxt.text = Q[num];
+        nowAnswer = A[num];
     }
 }
