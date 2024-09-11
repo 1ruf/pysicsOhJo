@@ -41,8 +41,15 @@ public class FishingSystemMain : MonoBehaviour
     private string OJrarity = "알수 없음";
     private bool IsThrowed, IsLibOpend, LibBtnCool;
 
-    private string[] Q = { "1번 문제", "2번 문제", "3번 문제", "4번 문제", "5번 문제", "6번 문제", "7번 문제" };
-    private string[] A = { "1번 답"  , "2번 답", "3번 답", "4번 답", "5번 답", "6번 답", "7번 답" };
+    private string[] Q = { 
+        "외부 자기장이 사라져도 자기장을 오래 유지할수 있는 자성체는?",
+        "상자성체는 상자성을 가지는 물체로, 강자성체와 달리 내부에 ㅁㅁㅁㅁ이 없다. ㅁㅁㅁㅁ에 들어갈 말은?",
+        "물질이 자석에 반응하는 성질을 뭐라고 하는가?", 
+        "자성을 띄는 물체를 무엇이라고 하는가?",
+        "반자성체는 외부 자기장과 반대 방향으로 자기화되었다가 외부 자기장을 제거하면 자기화 상태가 바로 사라진다.(O,X)",
+        "강자성체는 외부 자기장을 제거해도 자기화된 상태가 오래 유지된다.(O,X)",
+        "반자성체는 반자성을 가지는 물체로, 내부에 ㅁㅁㅁ을 가지는 원자가 없다. ㅁㅁㅁ 에 들어갈 말은?" };
+    private string[] A = { "강자성체"  , "자기구역", "자성", "자성체", "O", "O", "자기장" };
 
     private void Awake()
     {
@@ -158,7 +165,7 @@ public class FishingSystemMain : MonoBehaviour
         else if (randomValue <= 99.5)
         {
             // Legendary: 19-20 (cumulative 4% range)
-            OJrarity = "legendary";                                                             //2
+            OJrarity = "legendary";                                                             //1.6
             ItemNum = UnityEngine.Random.Range(19, 21); // Random number between 19 and 20
         }
         else 
@@ -330,15 +337,26 @@ public class FishingSystemMain : MonoBehaviour
     private int SetQuestion()//문제 설정
     {
         int randNum = Random.Range(1, (Q.Length));
-        while (true)
+        /*while (true)
         {
-            if (visibledQ == null)
-                break;
-            else if (!(visibledQ.Contains(randNum)))
+            if (visibledQ.Contains(randNum))
+            {
+                randNum = Random.Range(1, (Q.Length));
+                SetQuestion();
+            }
+            else if (visibledQ.Contains(randNum) == false)
                 break;
             else
-                visibledQ.RemoveAll(num => num <= visibledQ.Count);
+            {
+
+                for (int i = 0; i <= visibledQ.Count; i++)
+                {
+                    visibledQ.Remove(i);
+                }
+                break;
+            }
         }
+        visibledQ.Add(randNum);*/
         print(randNum);
         return randNum;
     }
